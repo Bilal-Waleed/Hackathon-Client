@@ -5,6 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { HashLink } from 'react-router-hash-link';
 import cookies from 'js-cookie';
 import { AuthContext } from '../context/AuthContext';
+import {showToast} from '../components/Toast';
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
@@ -18,6 +19,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
+    showToast('success', 'Logged out successfully');
     cookies.remove('token');
     setUser(null);
     toggleSidebar();

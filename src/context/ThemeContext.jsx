@@ -14,4 +14,6 @@ export const ThemeContextProvider = ({children}) => {
   )
 };
 
+
 export const useTheme = () => useContext(ThemeContext);
+  

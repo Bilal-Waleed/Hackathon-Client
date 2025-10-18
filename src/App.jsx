@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import ScrollToHash from './components/ScrollToHash';
 import { ToastProvider } from './components/Toast';
 import Home from './pages/Home';
+import About from './pages/About';
 import Registration from './pages/Registration';
 import Login from './pages/Login';
 import Otp from './pages/Otp';
@@ -15,8 +16,14 @@ import NotFound from './pages/NotFound';
 import { ProtectedRoutes, RestrictedRoutes } from './components/ProtectedRoutes';
 import AdminRoutes from './components/AdminRoutes';
 import AdminServices from './pages/AdminPages/AdminServices';
+import Dashboard from './pages/Dashboard';
+import UploadReport from './pages/UploadReport';
+import ReportDetail from './pages/ReportDetail';
+import Timeline from './pages/Timeline';
+import Vitals from './pages/Vitals';
+import Profile from './pages/Profile';
 
-const App = () => {
+const App = () => { 
   const { User } = useContext(AuthContext);
 
   if(User) console.log(User);
@@ -28,10 +35,17 @@ const App = () => {
       <ScrollToHash />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/services" element={<Services />} />
         <Route path="*" element={<NotFound />} />
 
         <Route element={<ProtectedRoutes />}>
-          <Route path="/services" element={<Services />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/upload" element={<UploadReport />} />
+          <Route path="/reports/:id" element={<ReportDetail />} />
+          <Route path="/timeline" element={<Timeline />} />
+          <Route path="/vitals" element={<Vitals />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
 
         <Route element={<AdminRoutes />}>

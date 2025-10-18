@@ -25,11 +25,21 @@ const Navbar = () => {
     toggleSidebar();
   };
 
-  const navLinks = [
+  const publicLinks = [
     { to: '/', label: 'Home', isHash: false },
-    { to: '/#discover', label: 'Discover', isHash: true },
     { to: '/services', label: 'Services', isHash: false },
+    { to: '/about', label: 'About', isHash: false },
   ];
+
+  const authLinks = [
+    { to: '/dashboard', label: 'Dashboard', isHash: false },
+    { to: '/upload', label: 'Upload', isHash: false },
+    { to: '/timeline', label: 'Timeline', isHash: false },
+    { to: '/vitals', label: 'Vitals', isHash: false },
+    { to: '/profile', label: 'Profile', isHash: false },
+  ];
+
+  const navLinks = User ? [...publicLinks, ...authLinks] : publicLinks;
 
   const renderLink = (link) => {
     const isActive = link.isHash
@@ -41,16 +51,16 @@ const Navbar = () => {
         key={link.label}
         smooth
         to={link.to}
+        className={`relative group pb-1 transition-colors ${
+          isActive ? 'text-[#009966]' : (isDark ? 'text-white hover:text-[#00cc88]' : 'text-black hover:text-[#009966]')
+        }`}
         onClick={toggleSidebar}
-        className={`relative group font-medium text-lg transition-colors duration-300 ${
-          isDark ? 'text-white' : 'text-black'
-        } inline-block`}
       >
         {link.label}
         <span
-          className={`absolute left-0 -bottom-0 h-[2px] transition-all duration-300 ${
-            isDark ? 'bg-white' : 'bg-black'
-          } ${isActive ? 'w-[50%]' : 'w-0 group-hover:w-[50%]'}`}
+          className={`absolute left-0 -bottom-0 h-[2px] transition-all duration-300 bg-[#009966] ${
+            isActive ? 'w-[50%]' : 'w-0 group-hover:w-[50%]'
+          }`}
         />
       </HashLink>
     ) : (
@@ -58,15 +68,15 @@ const Navbar = () => {
         key={link.label}
         to={link.to}
         onClick={toggleSidebar}
-        className={`relative group font-medium text-lg transition-colors duration-300 ${
-          isDark ? 'text-white' : 'text-black'
-        } inline-block`}
+        className={`relative group pb-1 transition-colors ${
+          isActive ? 'text-[#009966]' : (isDark ? 'text-white hover:text-[#00cc88]' : 'text-black hover:text-[#009966]')
+        }`}
       >
         {link.label}
         <span
-          className={`absolute left-0 -bottom-0 h-[2px] transition-all duration-300 ${
-            isDark ? 'bg-white' : 'bg-black'
-          } ${isActive ? 'w-[50%]' : 'w-0 group-hover:w-[50%]'}`}
+          className={`absolute left-0 -bottom-0 h-[2px] transition-all duration-300 bg-[#009966] ${
+            isActive ? 'w-[50%]' : 'w-0 group-hover:w-[50%]'
+          }`}
         />
       </Link>
     );
@@ -74,10 +84,10 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className={`w-full px-4 py-3 shadow-md ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
+      <nav className={`w-full px-4 py-4 border-b ${isDark ? 'bg-black border-[#009966] border-opacity-30' : 'bg-white border-[#009966] border-opacity-20'}`}>
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className={`text-xl font-bold ${isDark ? 'text-white' : 'text-black'}`}>
-            My App
+          <div className={`text-2xl font-extrabold ${isDark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>
+            HealthMate
           </div>
 
           <div className="hidden md:flex space-x-8">
@@ -85,29 +95,29 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <button onClick={toggleTheme} className="focus:outline-none">
-              {isDark ? <FiSun className="text-white" /> : <FiMoon className="text-black" />}
+            <button onClick={toggleTheme} className={`focus:outline-none p-2 rounded-lg transition ${isDark ? 'hover:bg-gray-900 text-[#00cc88]' : 'hover:bg-gray-100 text-[#009966]'}`}>
+              {isDark ? <FiSun size={20} /> : <FiMoon size={20} />}
             </button>
 
             {!User ? (
               <Link
                 to="/register"
-                className={`hidden md:block px-4 py-1 rounded-2xl font-medium border ${
+                className={`hidden md:block px-5 py-2 rounded-lg font-semibold transition ${
                   isDark
-                    ? 'text-white border-white hover:bg-white hover:text-black'
-                    : 'text-black border-black hover:bg-black hover:text-white'
-                } transition-all duration-300`}
+                    ? 'bg-[#009966] hover:bg-[#00805a] text-white'
+                    : 'bg-[#009966] hover:bg-[#00805a] text-white'
+                }`}
               >
                 Sign Up
               </Link>
             ) : (
               <button
                 onClick={handleLogout}
-                className={`hidden md:block px-4 py-1 rounded-2xl font-medium border ${
+                className={`hidden md:block px-5 py-2 rounded-lg font-semibold border transition ${
                   isDark
-                    ? 'text-white border-white hover:bg-white hover:text-black'
-                    : 'text-black border-black hover:bg-black hover:text-white'
-                } transition-all duration-300`}
+                    ? 'border-[#009966] text-[#00cc88] hover:bg-[#009966] hover:bg-opacity-10'
+                    : 'border-[#009966] text-[#009966] hover:bg-[#009966] hover:bg-opacity-5'
+                }`}
               >
                 Logout
               </button>
@@ -125,9 +135,9 @@ const Navbar = () => {
       </nav>
 
       <div
-        className={`fixed top-0 right-0 h-full w-64 ${
-          isDark ? 'bg-gray-900' : 'bg-white'
-        } shadow-lg transform transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-full w-64 border-l ${
+          isDark ? 'bg-black border-[#009966] border-opacity-30' : 'bg-white border-[#009966] border-opacity-20'
+        } shadow-2xl transform transition-transform duration-300 ${
           isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
         } md:hidden z-50`}
       >
@@ -137,22 +147,22 @@ const Navbar = () => {
             <Link
               to="/register"
               onClick={toggleSidebar}
-              className={`px-4 py-1 rounded-2xl font-medium border text-center ${
+              className={`px-5 py-2 rounded-lg font-semibold text-center transition ${
                 isDark
-                  ? 'text-white border-white hover:bg-white hover:text-black'
-                  : 'text-black border-black hover:bg-black hover:text-white'
-              } transition-all duration-300`}
+                  ? 'bg-[#009966] hover:bg-[#00805a] text-white'
+                  : 'bg-[#009966] hover:bg-[#00805a] text-white'
+              }`}
             >
               Sign Up
             </Link>
           ) : (
             <button
               onClick={handleLogout}
-              className={`px-4 py-1 rounded-2xl font-medium border text-center ${
+              className={`px-5 py-2 rounded-lg font-semibold border text-center transition ${
                 isDark
-                  ? 'text-white border-white hover:bg-white hover:text-black'
-                  : 'text-black border-black hover:bg-black hover:text-white'
-              } transition-all duration-300`}
+                  ? 'border-[#009966] text-[#00cc88] hover:bg-[#009966] hover:bg-opacity-10'
+                  : 'border-[#009966] text-[#009966] hover:bg-[#009966] hover:bg-opacity-5'
+              }`}
             >
               Logout
             </button>

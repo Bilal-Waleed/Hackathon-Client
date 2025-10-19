@@ -19,6 +19,18 @@ const Timeline = () => {
   const [analyzing, setAnalyzing] = useState(false);
   const [lang, setLang] = useState('en');
 
+  const getPlainSummary = (ins, key) => {
+    if (!ins) return '';
+    const text = (ins.languageSummaries?.[key] || ins.languageSummaries?.en || '').trim?.() || '';
+    if (!text) return '';
+    try {
+      const obj = JSON.parse(text);
+      const inner = obj?.languageSummaries?.[key] || obj?.languageSummaries?.en || obj?.assessment;
+      if (typeof inner === 'string') return inner;
+    } catch {}
+    return text;
+  };
+
   useEffect(() => {
     (async () => {
       try {
@@ -152,45 +164,7 @@ const Timeline = () => {
               {insight.languageSummaries?.en || insight.languageSummaries?.roman ? (
                 <div>
                   <div className={`font-semibold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>Summary</div>
-                  <p className={dark ? 'text-gray-300' : 'text-gray-700'}>{insight.languageSummaries?.[lang] || ''}</p>
-                </div>
-              ) : null}
-              {insight.assessment && (
-                <div>
-                  <div className={`font-semibold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>Assessment</div>
-                  <p className={dark ? 'text-gray-300' : 'text-gray-700'}>{insight.assessment}</p>
-                </div>
-              )}
-              {insight.alerts?.length ? (
-                <div>
-                  <div className={`font-semibold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>Alerts</div>
-                  <ul className="list-disc ml-5 text-sm">
-                    {insight.alerts.map((a, idx) => (
-                      <li key={idx} className={`${a.status === 'high' || a.status === 'low' ? 'text-red-500' : (dark ? 'text-gray-300' : 'text-gray-700')}`}>
-                        {a.key}: {a.status} {a.reason ? `- ${a.reason}` : ''}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-              {insight.advice?.length ? (
-                <div>
-                  <div className={`font-semibold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>Advice</div>
-                  <ul className="list-disc ml-5 text-sm">
-                    {insight.advice.map((t, idx) => (
-                      <li key={idx}>{t}</li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-              {insight.followupQuestions?.length ? (
-                <div>
-                  <div className={`font-semibold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>Follow-up Questions</div>
-                  <ul className="list-disc ml-5 text-sm">
-                    {insight.followupQuestions.map((q, idx) => (
-                      <li key={idx}>{q}</li>
-                    ))}
-                  </ul>
+                  <p className={dark ? 'text-gray-300' : 'text-gray-700'}>{getPlainSummary(insight, lang)}</p>
                 </div>
               ) : null}
             </div>

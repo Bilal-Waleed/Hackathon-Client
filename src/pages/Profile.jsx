@@ -1,12 +1,33 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import api from '../utils/axios';
 
 const Profile = () => {
   const { User } = useContext(AuthContext);
   const { theme } = useTheme();
   const dark = theme === 'dark';
   const u = User?.user || User; // fallback
+  const [stats, setStats] = useState({ reports: 0, vitals: 0, daysActive: 0 });
+  const [loadingStats, setLoadingStats] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoadingStats(true);
+        const { data } = await api.get('/api/stats/quick');
+        setStats({
+          reports: Number(data.reports) || 0,
+          vitals: Number(data.vitals) || 0,
+          daysActive: Number(data.daysActive) || 0,
+        });
+      } catch (_) {
+        setStats({ reports: 0, vitals: 0, daysActive: 0 });
+      } finally {
+        setLoadingStats(false);
+      }
+    })();
+  }, []);
 
   return (
     <div className={`min-h-screen px-4 py-10 ${dark ? 'bg-black text-white' : 'bg-white text-gray-900'}`}>
@@ -44,15 +65,15 @@ const Profile = () => {
             <div className={`rounded-2xl p-6 border ${dark ? 'bg-gray-900 border-[#009966] border-opacity-30' : 'bg-gray-50 border-[#009966] border-opacity-20'}`}>
               <h2 className={`text-xl font-bold mb-4 ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>Account Details</h2>
               <div className="space-y-3">
-                <div className="flex justify-between py-2 border-b border-opacity-20 ${dark ? 'border-gray-700' : 'border-gray-300'}">
+                <div className={`flex justify-between py-2 border-b border-opacity-20 ${dark ? 'border-gray-700' : 'border-gray-300'}`}>
                   <span className={`font-semibold ${dark ? 'text-gray-400' : 'text-gray-600'}`}>Name</span>
                   <span>{u.name}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-opacity-20 ${dark ? 'border-gray-700' : 'border-gray-300'}">
+                <div className={`flex justify-between py-2 border-b border-opacity-20 ${dark ? 'border-gray-700' : 'border-gray-300'}`}>
                   <span className={`font-semibold ${dark ? 'text-gray-400' : 'text-gray-600'}`}>Email</span>
                   <span>{u.email}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-opacity-20 ${dark ? 'border-gray-700' : 'border-gray-300'}">
+                <div className={`flex justify-between py-2 border-b border-opacity-20 ${dark ? 'border-gray-700' : 'border-gray-300'}`}>
                   <span className={`font-semibold ${dark ? 'text-gray-400' : 'text-gray-600'}`}>CNIC</span>
                   <span>{u.cnic || '—'}</span>
                 </div>
@@ -67,15 +88,15 @@ const Profile = () => {
               <h2 className={`text-xl font-bold mb-4 ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>Quick Stats</h2>
               <div className="grid md:grid-cols-3 gap-4">
                 <div className={`text-center p-4 rounded-xl ${dark ? 'bg-black' : 'bg-white'}`}>
-                  <div className={`text-3xl font-bold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>—</div>
+                  <div className={`text-3xl font-bold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>{loadingStats ? '…' : stats.reports}</div>
                   <div className={`text-xs mt-1 ${dark ? 'text-gray-500' : 'text-gray-600'}`}>Reports</div>
                 </div>
                 <div className={`text-center p-4 rounded-xl ${dark ? 'bg-black' : 'bg-white'}`}>
-                  <div className={`text-3xl font-bold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>—</div>
+                  <div className={`text-3xl font-bold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>{loadingStats ? '…' : stats.vitals}</div>
                   <div className={`text-xs mt-1 ${dark ? 'text-gray-500' : 'text-gray-600'}`}>Vitals</div>
                 </div>
                 <div className={`text-center p-4 rounded-xl ${dark ? 'bg-black' : 'bg-white'}`}>
-                  <div className={`text-3xl font-bold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>—</div>
+                  <div className={`text-3xl font-bold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>{loadingStats ? '…' : stats.daysActive}</div>
                   <div className={`text-xs mt-1 ${dark ? 'text-gray-500' : 'text-gray-600'}`}>Days Active</div>
                 </div>
               </div>

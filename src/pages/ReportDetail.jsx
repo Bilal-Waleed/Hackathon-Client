@@ -28,6 +28,18 @@ const ReportDetail = () => {
     }
   };
 
+  const getPlainSummary = (insight, langKey) => {
+    if (!insight) return '';
+    const text = (insight.languageSummaries?.[langKey] || insight.languageSummaries?.en || '').trim();
+    if (!text) return '';
+    try {
+      const obj = JSON.parse(text);
+      const inner = obj?.languageSummaries?.[langKey] || obj?.languageSummaries?.en || obj?.assessment;
+      if (typeof inner === 'string') return inner;
+    } catch {}
+    return text;
+  };
+
   useEffect(() => {
     load();
   }, [id]);
@@ -141,59 +153,8 @@ const ReportDetail = () => {
             ) : (
               <div className="space-y-6">
                 <p className={`whitespace-pre-wrap text-sm leading-7 ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
-                  {(aiInsight.languageSummaries?.[lang] || '').trim()}
+                  {getPlainSummary(aiInsight, lang)}
                 </p>
-
-                {aiInsight.highlights?.length ? (
-                  <div className={`rounded-xl p-4 ${dark ? 'bg-black' : 'bg-white'}`}>
-                    <h3 className={`font-bold text-lg mb-3 ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>Highlights</h3>
-                    <ul className="space-y-2">
-                      {aiInsight.highlights.map((h, idx) => (
-                        <li key={idx} className={`flex items-start gap-2 text-sm ${h.flag === 'high' || h.flag === 'low' ? 'text-red-500' : (dark ? 'text-gray-300' : 'text-gray-700')}`}>
-                          <span className={dark ? 'text-[#00cc88]' : 'text-[#009966]'}>•</span>
-                          <span><strong>{h.key}:</strong> {h.value} {h.flag && `(${h.flag})`}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-
-                {aiInsight.doctorQuestions?.length ? (
-                  <div className={`rounded-xl p-4 ${dark ? 'bg-black' : 'bg-white'}`}>
-                    <h3 className={`font-bold text-lg mb-3 ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>Questions for Your Doctor</h3>
-                    <ul className="space-y-2">
-                      {aiInsight.doctorQuestions.map((q, i) => (
-                        <li key={i} className={`flex items-start gap-2 text-sm ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
-                          <span className={dark ? 'text-[#00cc88]' : 'text-[#009966]'}>•</span>
-                          <span>{q}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-
-                {aiInsight.dietTips?.length ? (
-                  <div className={`rounded-xl p-4 ${dark ? 'bg-black' : 'bg-white'}`}>
-                    <h3 className={`font-bold text-lg mb-3 ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>Diet & Home Tips</h3>
-                    <ul className="space-y-2">
-                      {aiInsight.dietTips.map((q, i) => (
-                        <li key={i} className={`flex items-start gap-2 text-sm ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
-                          <span className={dark ? 'text-[#00cc88]' : 'text-[#009966]'}>•</span>
-                          <span>{q}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-
-                <div className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-500'}`}>
-                  For education and understanding only — consult your doctor for treatment.
-                </div>
-
-                <div className="flex gap-3">
-                  <button className={`px-4 py-2 rounded-xl border font-semibold transition ${dark ? 'border-[#009966] text-[#00cc88] hover:bg-[#009966] hover:bg-opacity-10' : 'border-[#009966] text-[#009966] hover:bg-[#009966] hover:bg-opacity-5'}`} onClick={() => onFeedback(true)}>👍 Helpful</button>
-                  <button className={`px-4 py-2 rounded-xl border font-semibold transition ${dark ? 'border-gray-700 text-gray-400 hover:bg-gray-800' : 'border-gray-300 text-gray-600 hover:bg-gray-100'}`} onClick={() => onFeedback(false)}>👎 Not accurate</button>
-                </div>
               </div>
             )}
           </div>

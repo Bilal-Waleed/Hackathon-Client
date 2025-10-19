@@ -35,17 +35,43 @@ const Discover = () => {
           <h3 className={`text-2xl font-bold mb-6 ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>How it works</h3>
           <div className="grid md:grid-cols-3 gap-6">
             <div>
-              <div className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ${dark ? 'bg-[#009966] bg-opacity-20 text-[#009966]' : 'bg-[#009966] bg-opacity-10 text-[#009966]'}`}>Step 1</div>
-              <p className="text-sm">Report upload karein (drag & drop supported).</p>
-            </div>
-            <div>
-              <div className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ${dark ? 'bg-[#009966] bg-opacity-20 text-[#009966]' : 'bg-[#009966] bg-opacity-10 text-[#009966]'}`}>Step 2</div>
-              <p className="text-sm">AI summary dekhein, highlights aur doctor questions note karein.</p>
-            </div>
-            <div>
-              <div className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ${dark ? 'bg-[#009966] bg-opacity-20 text-[#009966]' : 'bg-[#009966] bg-opacity-10 text-[#009966]'}`}>Step 3</div>
-              <p className="text-sm">Vitals add karke timeline par progress track karein.</p>
-            </div>
+          <div
+            className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ${
+              dark
+                ? 'bg-[#009966]/25 text-[#00ff99]'
+                : 'bg-[#009966]/15 text-[#006644]' 
+            }`}
+          >
+            Step 1
+          </div>
+          <p className="text-sm">Report upload karein (drag & drop supported).</p>
+        </div>
+
+        <div>
+          <div
+            className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ${
+              dark
+                ? 'bg-[#009966]/25 text-[#00ff99]'
+                : 'bg-[#009966]/15 text-[#006644]'
+            }`}
+          >
+            Step 2
+          </div>
+          <p className="text-sm">AI summary dekhein, highlights aur doctor questions note karein.</p>
+        </div>
+
+        <div>
+          <div
+            className={`inline-block px-3 py-1 rounded-full text-xs font-bold mb-2 ${
+              dark
+                ? 'bg-[#009966]/25 text-[#00ff99]'
+                : 'bg-[#009966]/15 text-[#006644]'
+            }`}
+          >
+            Step 3
+          </div>
+          <p className="text-sm">Vitals add karke timeline par progress track karein.</p>
+        </div>
           </div>
         </div>
 

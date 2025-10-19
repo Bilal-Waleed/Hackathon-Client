@@ -30,14 +30,23 @@ const ReportDetail = () => {
 
   const getPlainSummary = (insight, langKey) => {
     if (!insight) return '';
-    const text = (insight.languageSummaries?.[langKey] || insight.languageSummaries?.en || '').trim();
-    if (!text) return '';
-    try {
-      const obj = JSON.parse(text);
+    const base = (insight.languageSummaries?.[langKey] || insight.languageSummaries?.en || '').trim();
+    if (!base) return '';
+    const parseJsonLoose = (s) => {
+      try {
+        const cleaned = s.replace(/```(?:json)?/gi, '').replace(/```/g, '').trim();
+        try { return JSON.parse(cleaned); } catch {}
+        const m = cleaned.match(/{[\s\S]*}/);
+        if (m) { try { return JSON.parse(m[0]); } catch {} }
+      } catch {}
+      return null;
+    };
+    const obj = parseJsonLoose(base);
+    if (obj) {
       const inner = obj?.languageSummaries?.[langKey] || obj?.languageSummaries?.en || obj?.assessment;
       if (typeof inner === 'string') return inner;
-    } catch {}
-    return text;
+    }
+    return base;
   };
 
   useEffect(() => {
@@ -145,7 +154,7 @@ const ReportDetail = () => {
           <div className={`rounded-2xl p-6 border ${dark ? 'bg-gray-900 border-[#009966] border-opacity-30' : 'bg-gray-50 border-[#009966] border-opacity-20'}`}>
             <div className="flex items-center justify-between mb-4">
               <h2 className={`text-2xl font-bold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>AI Summary</h2>
-              <LanguageToggle value={lang} onChange={setLang} />
+              <LanguageToggle value={lang} onChange={setLang} dark={dark} />
             </div>
 
             {!aiInsight ? (

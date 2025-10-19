@@ -21,14 +21,23 @@ const Timeline = () => {
 
   const getPlainSummary = (ins, key) => {
     if (!ins) return '';
-    const text = (ins.languageSummaries?.[key] || ins.languageSummaries?.en || '').trim?.() || '';
-    if (!text) return '';
-    try {
-      const obj = JSON.parse(text);
+    const base = (ins.languageSummaries?.[key] || ins.languageSummaries?.en || '').trim?.() || '';
+    if (!base) return '';
+    const parseJsonLoose = (s) => {
+      try {
+        const cleaned = s.replace(/```(?:json)?/gi, '').replace(/```/g, '').trim();
+        try { return JSON.parse(cleaned); } catch {}
+        const m = cleaned.match(/{[\s\S]*}/);
+        if (m) { try { return JSON.parse(m[0]); } catch {} }
+      } catch {}
+      return null;
+    };
+    const obj = parseJsonLoose(base);
+    if (obj) {
       const inner = obj?.languageSummaries?.[key] || obj?.languageSummaries?.en || obj?.assessment;
       if (typeof inner === 'string') return inner;
-    } catch {}
-    return text;
+    }
+    return base;
   };
 
   useEffect(() => {
@@ -149,7 +158,7 @@ const Timeline = () => {
           <div className="flex items-center justify-between mb-4">
             <h3 className={`text-xl font-bold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>Vitals Analysis</h3>
             <div className="flex items-center gap-3">
-              <LanguageToggle value={lang} onChange={setLang} />
+              <LanguageToggle value={lang} onChange={setLang} dark={dark} />
               <button onClick={() => setOpen(false)} className={`px-3 py-1 rounded-lg border ${dark ? 'border-gray-700 hover:bg-gray-800' : 'border-gray-300 hover:bg-gray-100'}`}>Close</button>
             </div>
           </div>

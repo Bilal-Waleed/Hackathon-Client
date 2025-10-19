@@ -10,9 +10,16 @@ const Home = () => {
       <section className="px-4 py-20">
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <div className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 ${dark ? 'bg-[#009966] bg-opacity-20 text-[#009966]' : 'bg-[#009966] bg-opacity-10 text-[#009966]'}`}>
+            <div
+              className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 ${
+                dark
+                  ? 'bg-[#009966]/20 text-[#00ff99]'
+                  : 'bg-[#009966]/10 text-[#006644]' 
+              }`}
+            >
               AI-Powered Health Vault
             </div>
+
             <h1 className="text-5xl md:text-6xl font-extrabold leading-tight">
               HealthMate
             </h1>

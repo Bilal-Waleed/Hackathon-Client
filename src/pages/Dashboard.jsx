@@ -9,46 +9,63 @@ const Dashboard = () => {
   const dark = theme === 'dark';
   const [reports, setReports] = useState([]);
   const [vitals, setVitals] = useState([]);
+  const [latest, setLatest] = useState({ lastBP: null, lastSugar: null, lastWeight: null, lastReport: null });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const [{ data: r }, { data: v }] = await Promise.all([
+        const [{ data: r }, { data: v }, { data: L }] = await Promise.all([
           api.get('/api/reports?limit=3&page=1'),
           api.get('/api/vitals?limit=5&page=1'),
+          api.get('/api/stats/latest'),
         ]);
         setReports(r.items || []);
         setVitals(v.items || []);
+        setLatest(L || {});
       } finally {
         setLoading(false);
       }
     })();
   }, []);
 
-  const lastBP = vitals.find((x) => x.type === 'bp');
-  const lastSugar = vitals.find((x) => x.type === 'sugar');
-  const lastWeight = vitals.find((x) => x.type === 'weight');
+  const lastBP = latest.lastBP;
+  const lastSugar = latest.lastSugar;
+  const lastWeight = latest.lastWeight;
+  const lastReport = latest.lastReport;
 
   return (
     <div className={`min-h-screen px-4 py-10 ${dark ? 'bg-black text-white' : 'bg-white text-gray-900'}`}>
       <div className="max-w-6xl mx-auto space-y-8">
         <h1 className={`text-4xl font-extrabold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>Dashboard</h1>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-4 gap-6">
           <div className={`rounded-2xl p-6 border ${dark ? 'bg-gray-900 border-[#009966] border-opacity-30' : 'bg-gray-50 border-[#009966] border-opacity-20'}`}>
             <div className={`text-sm mb-2 ${dark ? 'text-gray-400' : 'text-gray-600'}`}>Last BP</div>
             <div className={`text-3xl font-bold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>
-              {lastBP ? `${lastBP.values?.systolic ?? '-'} / ${lastBP.values?.diastolic ?? '-'}` : '—'}
+              {lastBP ? `${lastBP.systolic ?? '-'} / ${lastBP.diastolic ?? '-'}` : '—'}
             </div>
+            <div className={`text-xs mt-1 ${dark ? 'text-gray-500' : 'text-gray-600'}`}>{lastBP?.date ? new Date(lastBP.date).toLocaleString() : ''}</div>
           </div>
           <div className={`rounded-2xl p-6 border ${dark ? 'bg-gray-900 border-[#009966] border-opacity-30' : 'bg-gray-50 border-[#009966] border-opacity-20'}`}>
             <div className={`text-sm mb-2 ${dark ? 'text-gray-400' : 'text-gray-600'}`}>Last Sugar</div>
-            <div className={`text-3xl font-bold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>{lastSugar ? lastSugar.values?.value ?? '—' : '—'}</div>
+            <div className={`text-3xl font-bold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>{lastSugar ? (lastSugar.value ?? '—') : '—'}</div>
+            <div className={`text-xs mt-1 ${dark ? 'text-gray-500' : 'text-gray-600'}`}>{lastSugar?.date ? new Date(lastSugar.date).toLocaleString() : ''}</div>
           </div>
           <div className={`rounded-2xl p-6 border ${dark ? 'bg-gray-900 border-[#009966] border-opacity-30' : 'bg-gray-50 border-[#009966] border-opacity-20'}`}>
             <div className={`text-sm mb-2 ${dark ? 'text-gray-400' : 'text-gray-600'}`}>Last Weight</div>
-            <div className={`text-3xl font-bold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>{lastWeight ? lastWeight.values?.value ?? '—' : '—'}</div>
+            <div className={`text-3xl font-bold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>{lastWeight ? (lastWeight.value ?? '—') : '—'}</div>
+            <div className={`text-xs mt-1 ${dark ? 'text-gray-500' : 'text-gray-600'}`}>{lastWeight?.date ? new Date(lastWeight.date).toLocaleString() : ''}</div>
+          </div>
+          <div className={`rounded-2xl p-6 border ${dark ? 'bg-gray-900 border-[#009966] border-opacity-30' : 'bg-gray-50 border-[#009966] border-opacity-20'}`}>
+            <div className={`text-sm mb-2 ${dark ? 'text-gray-400' : 'text-gray-600'}`}>Last Report</div>
+            <div className={`text-base font-bold ${dark ? 'text-[#00cc88]' : 'text-[#009966]'}`}>{lastReport ? lastReport.title : '—'}</div>
+            <div className={`text-xs mt-1 ${dark ? 'text-gray-500' : 'text-gray-600'}`}>{lastReport?.dateTaken ? new Date(lastReport.dateTaken).toLocaleString() : ''}</div>
+            {lastReport?.id && (
+              <div className="mt-2">
+                <Link to={`/reports/${lastReport.id}`} className={`text-xs font-semibold ${dark ? 'text-[#00cc88] hover:underline' : 'text-[#009966] hover:underline'}`}>Open last report →</Link>
+              </div>
+            )}
           </div>
         </div>
 

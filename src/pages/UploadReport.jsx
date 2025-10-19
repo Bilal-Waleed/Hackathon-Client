@@ -33,8 +33,10 @@ const UploadReport = () => {
       setAnalyzing(true);
       // 1) Get signed params
       const { data: signed } = await api.get('/api/files/signed-params');
-      // 2) Upload to Cloudinary
-      const endpoint = `https://api.cloudinary.com/v1_1/${signed.cloudName}/auto/upload`;
+      // 2) Upload to Cloudinary (use auto for PDFs, image for images)
+      const isPdf = selectedFile.type === 'application/pdf' || (selectedFile.name || '').toLowerCase().endsWith('.pdf');
+      const imageEndpoint = `https://api.cloudinary.com/v1_1/${signed.cloudName}/image/upload`;
+      const rawEndpoint = `https://api.cloudinary.com/v1_1/${signed.cloudName}/raw/upload`;
       const form = new FormData();
       form.append('file', selectedFile);
       form.append('api_key', signed.apiKey);
@@ -42,24 +44,38 @@ const UploadReport = () => {
       form.append('signature', signed.signature);
       form.append('folder', signed.folder);
 
-      const res = await axios.post(endpoint, form);
+      let res;
+      try {
+        res = await axios.post(imageEndpoint, form);
+      } catch (err) {
+        if (isPdf) {
+          // Fallback: some accounts treat PDFs as raw on upload
+          res = await axios.post(rawEndpoint, form);
+        } else {
+          throw err;
+        }
+      }
       const c = res.data;
       const fileUrl = c.secure_url;
       const filePublicId = c.public_id;
       const format = c.format?.toLowerCase();
-      const fileType = format === 'pdf' ? 'pdf' : 'image';
+      const fileType = isPdf || format === 'pdf' ? 'pdf' : 'image';
 
       // 3) Extract pages/images into a folder (for later page viewing/compose)
       const pages = c.pages || 1;
       const pagesFolder = `healthmate/pages/${filePublicId}`;
       const tag = `pages:${filePublicId}`;
-      await api.post('/api/files/extract-pdf-pages', {
-        filePublicId,
-        fileUrl,
-        folder: pagesFolder,
-        pages,
-        tag,
-      });
+      try {
+        await api.post('/api/files/extract-pdf-pages', {
+          filePublicId,
+          fileUrl,
+          folder: pagesFolder,
+          pages,
+          tag,
+        });
+      } catch (_) {
+        // Non-blocking: continue to create report and analyze even if page extraction fails
+      }
 
       // 4) Create report + analyze
       const payload = {
